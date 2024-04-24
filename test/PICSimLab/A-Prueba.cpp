@@ -18,7 +18,7 @@
 // Define el pin para el botón de iniciar.
 #define PIN_START 6
 // Define el pin de sincronización.
-#define PIN_SYNC 13
+#define PIN_SYNC 11
 
 // Instancia de la clase SoftSPI.
 MasterSPI masterSPI(PIN_MOSI, PIN_MISO, PIN_SCK);
@@ -40,8 +40,6 @@ unsigned char step = _STEP6;
 unsigned int counter = 0;
 unsigned int prevVolume = 0;
 unsigned int prevTemp = 0;
-// Intervalo de tiempo para esperar al otro controlador.
-const unsigned long interval = 1500;
 
 // Configuración inicial.
 void setup(){
@@ -50,23 +48,10 @@ void setup(){
     // Configura los pines.
     pinMode(PIN_SS, OUTPUT); // Configura el pin SS como salida.
     pinMode(PIN_START, INPUT); // Configura el pin START como entrada.
-    pinMode(PIN_SYNC, INPUT); // Configura el pin SYNC como entrada.
 
     // Inicializa SoftSPI.
     masterSPI.begin(); // Inicializa SoftSPI.
     masterSPI.setClockDivider(SPI_CLOCK_DIV64); // Divide el reloj entre 64.
-}
-
-// Sync both controllers.
-void syncController(){
-    unsigned long previousMillis = millis();
-    while(digitalRead(PIN_SYNC) == LOW){ // Espera a que llegue el otro gemelo.
-        // Comprobar si no debo esperar más para no bloquear el sistema.
-        unsigned long currentMillis = millis();
-        if(currentMillis - previousMillis >= interval){
-            break;
-        }
-    }
 }
 
 // Transfer the command to the slave.
@@ -74,8 +59,6 @@ unsigned char transferir(unsigned char comando){
     unsigned char resp = 0;
 
     digitalWrite(PIN_SS, LOW); // Habilita el esclavo.
-
-    syncController(); // Sincroniza los dos controladores.
 
     delay(8); // Espera un poco para enviar el comando.
     resp = masterSPI.transfer(comando); // Envia el comando para el tanque.
@@ -95,19 +78,26 @@ unsigned char transferir(unsigned char comando){
 void loop(){
     delay(750); // Espera 0.75 segundos.
     respuesta = transferir(comando); // Envía el comando.
-    if(respuesta > 0 && respuesta < 70){
+    if(respuesta != 0){
         Serial.print("Respuesta: ");
         Serial.println(respuesta);        
     } else {
         Serial.println("Connecting...");
     }
-    
+    respuesta = 0;
+
+    // Muestro el estado del tanque.
+    if(actualizado){
+        tank.unPackSRTankData(tankData2.popurri);
+        tank.imprimirSRTank();
+        actualizado = 0;
+    }
+
     // Máquina de estados de los pasos del proceso realizado en el tanque.
     switch(step){
         case _STEP0: // Llenar tanque hasta los 1500 litros con una solución ya mezclada de agua con sosa caústica.
             Serial.println("I am STEP0");
-            if(tankData2.volume >= 1250){
-
+            if(tankData2.volume >= 1220){
                 step = _CHECK_STEP0;
                 comando = _CLOSE_INLET;
             } else {
@@ -167,7 +157,7 @@ void loop(){
             break;
         case _STEP2: // Rellenar con aceites hasta los 3000 litros.
             Serial.println("I am STEP2");
-            if(tankData2.volume > 2750){
+            if(tankData2.volume >= 2875){
                 step = _CHECK_STEP2;
                 comando = _CLOSE_INLET2;
             } else {
@@ -254,7 +244,7 @@ void loop(){
             break;
         case _STEP5: // Abrir la válvula de vaciado del tanque para procesar el resultado en una maquinaria que dividirá y empaquetará el jabón.
             Serial.println("I am STEP5");
-            if(tankData2.volume < 250){
+            if(tankData2.volume <= 200){
                 step = _CHECK_STEP5;
                 comando = _CLOSE_OUTLET;
             } else {
@@ -264,50 +254,30 @@ void loop(){
         case _CHECK_STEP5: // Checking STEP5.
             Serial.println("I am checking STEP5");
             comando = _STAY_CHILL;
-            if(counter == 2){
-                unsigned int volume = tankData2.volume;
-                if(volume == 0 && (!tankData.lowFloater)){ // Faltaría comprobar que la válvula está cerrada.
-                    step = _STEP6;
-                    comando = _STAY_CHILL;
-                    // Serial.println("Correct STEP5");
-                } else {
-                    step = _STEP7;
-                    comando = _ABORT;
-                }
-                counter = 0;
+            if(tankData2.volume == 0 && (!tankData.lowFloater)){ // Faltaría comprobar que la válvula está cerrada.
+                step = _STEP6;
+                comando = _STAY_CHILL;
+                // Serial.println("Correct STEP2");
             } else {
-                counter++;
+                step = _STEP7;
+                comando = _ABORT;
             }
             break;
         case _STEP6: // Finish.
-            Serial.println("\nWaiting for a button to be pressed...");
+            Serial.println("\nWaiting for a button push...");
             step = _STEP0;
-            while(digitalRead(PIN_START) == HIGH); // Espera a que se pulse el botón para iniciar el sistema.
             comando = _STAY_CHILL;
-            respuesta = 100; // Para no mostrar el estado del tanque al inicializar.
             break;
         case _STEP7: // ERROR - STATE.
             Serial.println("I am waiting for an operator to fix the error...");
             step = _STEP0;
-            comando = _ABORT;
-            respuesta = 100; // Para no mostrar el estado del tanque al inicializar.
-            tank.resetTank();
-            while(digitalRead(PIN_START) == HIGH); // Espera a que se pulse el botón que indica que se ha solucionado el problema.
+            comando = _STAY_CHILL;
             break;
         default: // ERROR-Abortar.
             Serial.println("Invalid STEP - Abort Now");
             comando = _ABORT;
-            respuesta = 100; // Para no mostrar el estado del tanque al inicializar.
             break;
     }
-
-    // Muestro el estado del tanque.
-    if(actualizado && respuesta < 70){
-        tank.unPackSRTankData(tankData2.popurri);
-        tank.imprimirSRTank();
-        actualizado = 0;
-    }
-    respuesta = 0;
 
     delay(750); // Espera 0.75 segundos.
 }

@@ -63,6 +63,7 @@ public:
     TankData2 getInit2(void);
     void unPackSRTankData(unsigned int popurri);
     void imprimirSRTank();
+    void resetTank();
 
 public:
     // Digital outputs.

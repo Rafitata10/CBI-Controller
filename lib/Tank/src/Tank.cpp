@@ -55,4 +55,15 @@ void Tank::imprimirSRTank(){
     Serial.println(tankData2.temperature);
 }
 
+// Define the function unPackSRTankData.
+void Tank::resetTank(){
+    tankData.highFloater    = 0;
+    tankData.lowFloater     = 0;
+    tankData.maxTemperature = 0;
+    tankData.minTemperature = 0;
+    tankData.revolutions    = 0;
+    tankData2.volume        = 0;
+    tankData2.temperature   = 0;
+}
+
 // path: lib/Tank/Tank.cpp
