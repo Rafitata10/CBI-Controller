@@ -7,9 +7,7 @@
 Tank tank;
 
 // Constructor.
-Tank::Tank() : highFloater(0), lowFloater(0), minTemperature(0), maxTemperature(0), volume(0), temperature(0) {
-    ;
-}
+Tank::Tank() : highFloater(0), lowFloater(0), minTemperature(0), maxTemperature(0), volume(0), temperature(0) {}
 
 // Initialize the tank with default values.
 TankData Tank::getInit(void){
@@ -55,7 +53,7 @@ void Tank::imprimirSRTank(){
     Serial.println(tankData2.temperature);
 }
 
-// Define the function unPackSRTankData.
+// Define the function resetTank.
 void Tank::resetTank(){
     tankData.highFloater    = 0;
     tankData.lowFloater     = 0;

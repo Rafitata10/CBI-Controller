@@ -10,6 +10,15 @@
 #include <Arduino.h>
 #include <SPI.h>
 
+// Define los pines para SoftSPI.
+#define PIN_MOSI 7 // 11
+#define PIN_MISO 8 // 12
+#define PIN_SCK  9 // 13
+#define PIN_SS  10
+// Define los pines de sincronización.
+#define PIN_SYNC_3 3
+#define PIN_SYNC_4 4
+
 class MasterSPI {
     public:
         MasterSPI(uint8_t mosi, uint8_t miso, uint8_t sck);

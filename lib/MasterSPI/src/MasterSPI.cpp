@@ -18,9 +18,14 @@ MasterSPI::MasterSPI(uint8_t mosi, uint8_t miso, uint8_t sck){
 
 // Inicializa la comunicación SPI del master.
 void MasterSPI::begin(){
+    // Inicializa el puerto serie.
+    Serial.begin(9600);
+
     pinMode(_mosi, OUTPUT);
     pinMode(_miso, INPUT);
     pinMode(_sck, OUTPUT);
+
+    setClockDivider(SPI_CLOCK_DIV64); // Divide el reloj entre 64.
 }
 
 // Finaliza la comunicación SPI del master.
