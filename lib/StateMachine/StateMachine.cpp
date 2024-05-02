@@ -10,27 +10,18 @@ StateMachine::StateMachine(){}
 
 void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankData& tankData, TankData2& tankData2, unsigned int& respuesta, unsigned int master){
     // Máquina de estados de los pasos del proceso realizado en el tanque.
-    char mensaje[55];
     switch(step){
         case _STEP0: // Llenar tanque hasta los 1500 litros con una solución ya mezclada de agua con sosa caústica.
-            strcpy(mensaje, "I am STEP0");
+            Serial.println(F("I am STEP0"));
             if(tankData2.volume >= 1250){
                 step = _CHECK_STEP0;
                 comando = _CLOSE_INLET;
-                counter = 0;
             } else {
                 comando = _OPEN_INLET;
-                if(master == MASTER_2 && counter == 4){
-                    comando = _STAY_CHILL;
-                } else if(master == MASTER_2 && counter == 5){
-                    strcpy(mensaje, "Sensor failure...");
-                }
-                counter++;
             }
-            Serial.println(mensaje);
             break;
         case _CHECK_STEP0: // Checking STEP0.
-            Serial.println("I am checking STEP0");
+            Serial.println(F("I am checking STEP0"));
             comando = _STAY_CHILL;
             if(counter == 2){
                 unsigned int volume = tankData2.volume;
@@ -51,24 +42,27 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _STEP1: // Calentar la solución a una temperatura de 35ºC.
-            strcpy(mensaje, "I am STEP1");
+            if(master == MASTER_2 && (counter == 2 || counter == 5)){
+                Serial.println(F("Sensor failure..."));
+            } else {
+                Serial.println(F("I am STEP1"));
+            }            
             if(tankData2.temperature >= 34){
                 step = _CHECK_STEP1;
                 comando = _TURN_OFF_HEAT;
                 counter = 0;
             } else {
-                comando = _TURN_ON_HEAT;
                 if(master == MASTER_2 && (counter == 2 || counter == 5)){
+                    step = _RESETING;
                     comando = _STAY_CHILL;
-                } else if(master == MASTER_2 && (counter == 3 || counter == 6)){
-                    strcpy(mensaje, "Sensor failure...");
+                } else {
+                   comando = _TURN_ON_HEAT; 
                 }
                 counter++;
             }
-            Serial.println(mensaje);
             break;
         case _CHECK_STEP1: // Checking STEP1.
-            Serial.println("I am checking STEP1");
+            Serial.println(F("I am checking STEP1"));
             comando = _STAY_CHILL;
             if(counter == 2){
                 unsigned int temp = tankData2.temperature;
@@ -89,7 +83,7 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _STEP2: // Rellenar con aceites hasta los 3000 litros.
-            Serial.println("I am STEP2");
+            Serial.println(F("I am STEP2"));
             if(tankData2.volume > 2750){
                 step = _CHECK_STEP2;
                 comando = _CLOSE_INLET2;
@@ -98,7 +92,7 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _CHECK_STEP2: // Checking STEP2.
-            Serial.println("I am checking STEP2");
+            Serial.println(F("I am checking STEP2"));
             comando = _STAY_CHILL;
             if(counter == 2){
                 unsigned int volume = tankData2.volume;
@@ -119,7 +113,7 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _STEP3: // Mezclar con el agitador el contenido del tanque, (se removerá hasta que se alcancen los 50ºC).
-            Serial.println("I am STEP3");
+            Serial.println(F("I am STEP3"));
             if(tankData2.temperature == 49){
                 comando = _TURN_OFF_STIR;
             } else if(tankData2.temperature >= 50){
@@ -129,7 +123,7 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _CHECK_STEP3: // Checking STEP3.
-            Serial.println("I am checking STEP3");
+            Serial.println(F("I am checking STEP3"));
             comando = _STAY_CHILL;
             if(counter == 1){
                 if(tankData2.temperature >= 49 && (!tankData.revolutions)){
@@ -146,8 +140,8 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _STEP4: // Enfriar la mezcla hasta los 25ºC ya que al tratarse de una reacción exotérmica, se calentará.
-            Serial.println("I am STEP4");
-            if(tankData2.temperature <= 25){
+            Serial.println(F("I am STEP4"));
+            if(tankData2.temperature <= 26){
                 step = _CHECK_STEP4;
                 comando = _TURN_OFF_COOL;
             } else {
@@ -155,11 +149,11 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _CHECK_STEP4: // Checking STEP4.
-            Serial.println("I am checking STEP4");
+            Serial.println(F("I am checking STEP4"));
             comando = _STAY_CHILL;
             if(counter == 2){
                 unsigned int temp = tankData2.temperature;
-                if(temp <= 25 && prevTemp == temp && (!tankData.minTemperature)){
+                if(temp <= 26 && prevTemp == temp && (!tankData.minTemperature)){
                     step = _STEP5;
                     comando = _STAY_CHILL;
                     // Serial.println("Correct STEP4");
@@ -176,7 +170,7 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _STEP5: // Abrir la válvula de vaciado del tanque para procesar el resultado en una maquinaria que dividirá y empaquetará el jabón.
-            Serial.println("I am STEP5");
+            Serial.println(F("I am STEP5"));
             if(tankData2.volume < 250){
                 step = _CHECK_STEP5;
                 comando = _CLOSE_OUTLET;
@@ -185,7 +179,7 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _CHECK_STEP5: // Checking STEP5.
-            Serial.println("I am checking STEP5");
+            Serial.println(F("I am checking STEP5"));
             comando = _STAY_CHILL;
             if(counter == 2){
                 unsigned int volume = tankData2.volume;
@@ -204,7 +198,7 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             break;
         case _STEP6: // Finish.
             if(digitalRead(PIN_RESET) == LOW){
-                Serial.println("\nWaiting for a button to be pressed...");
+                Serial.println(F("\nWaiting for a button to be pressed..."));
                 respuesta = 100; // Para no mostrar el estado del tanque al inicializar.
                 while(digitalRead(PIN_START) == HIGH); // Espera a que se pulse el botón para iniciar el sistema.
                 step = _STEP0;
@@ -216,7 +210,7 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             break;
         case _STEP7: // ERROR - STATE.
             if(counter == 1){
-                Serial.println("I am waiting for an operator to fix the error...");
+                Serial.println(F("Waiting for an operator to fix the error..."));
                 tank.resetTank();
                 respuesta = 100; // Para no mostrar el estado del tanque al inicializar.
                 while(digitalRead(PIN_START) == HIGH); // Espera a que se pulse el botón que indica que se ha solucionado el problema.
@@ -229,8 +223,9 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         default: // ERROR-Abortar.
-            Serial.println("Invalid STEP - Abort Now");
-            comando = _ABORT;
+            Serial.println(F("I am Reseting"));
+            comando = _STAY_CHILL;
+            step = _RESETING;
             respuesta = 100; // Para no mostrar el estado del tanque al inicializar.
             break;
     }
@@ -266,12 +261,12 @@ unsigned int StateMachine::desconvertir(unsigned int& code){
         default:
             break;
     }
-    Serial.print("Desconvertir -> ");
-    Serial.println(resp);    
+    Serial.print(F("Desconvertir -> "));
+    Serial.println(resp);
     return resp;
 }
 
-void StateMachine::checkResponse(unsigned int& step, unsigned int& respuesta){
+void StateMachine::checkResponse(unsigned int& step, unsigned int& respuesta, Screen& myScreen){
     // Se ha enviado un posible comando de reset.
     if(respuesta != _EXPEC_RESP){
         switch(respuesta){
@@ -289,7 +284,7 @@ void StateMachine::checkResponse(unsigned int& step, unsigned int& respuesta){
             case _RESET5*2:
             case _RESET6:
             case _RESET6*2:
-            case _RESET7: step = desconvertir(respuesta); break;
+            case _RESET7: step = desconvertir(respuesta); myScreen.showStep(_RESETING); break;
             default:
             break;
         }

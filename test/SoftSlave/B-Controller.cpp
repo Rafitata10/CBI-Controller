@@ -27,24 +27,21 @@ unsigned int respuesta = 0;
 unsigned char actualizado = 0;
 // Comando a enviar al comparator.
 unsigned char comando = _OPEN_INLET;
-// Variable para el estado del tanque.
+// Variables para el estado del tanque.
 unsigned int step = _STEP6;
+unsigned int prevStep = _STEP6;
 
 // Configuración inicial.
 void setup(){
     // Configura los pines.
-    pinMode(PIN_SS, OUTPUT); // Configura el pin SS como salida.
-    pinMode(PIN_START, INPUT); // Configura el pin START como entrada.
-    pinMode(PIN_RESET, INPUT); // Configura el pin RESET como entrada.
-    pinMode(PIN_SYNC_3, OUTPUT); // Configura el pin 3 como salida.
-    pinMode(PIN_SYNC_4, INPUT); // Configura el pin 4 como entrada.
+    masterSPI.initPins();
+
+    // Display setup.
+    myScreen.initialize();
 
     // Inicializa SoftSPI.
     masterSPI.begin();
-
-    // GAP Between the two controllers.
-    delay(25); // Espera 25 ms.
-}
+}  
 
 // Sync both controllers.
 void syncController(){
@@ -85,25 +82,20 @@ void loop(){
 
     syncController(); // Sincroniza los dos controladores.
     // GAP Between the two controllers.
-    delay(15); // Espera 10 ms.
+    delay(8); // Espera 8 ms.
 
     respuesta = transferir(comando); // Envía el comando.
     if(respuesta > 0 && respuesta < 70){
-        Serial.print("Response: ");
+        Serial.print(F("Response: "));
         Serial.println(respuesta);
     } else {
-        Serial.println("Connecting...");
+        Serial.println(F("Connecting..."));
     }
 
-    myStateMachine.checkResponse(step, respuesta);
+    myStateMachine.checkResponse(step, respuesta, myScreen);
 
-    unsigned int oldStep = step;
     // Selección del siguiente comando.
     myStateMachine.handleState(step, comando, tankData, tankData2, respuesta, MASTER_2);
-    if(oldStep == _STEP6 || oldStep == _STEP7){
-        // GAP Between the two controllers.
-        delay(10); // Espera 10 ms.
-    }
 
     // Muestro el estado del tanque.
     if(actualizado && respuesta < 70){
@@ -112,6 +104,16 @@ void loop(){
         actualizado = 0;
     }
     respuesta = 0;
+
+    if(digitalRead(PIN_RESET) == HIGH){
+        step = _RESETING;
+    }
+    
+    if(step != prevStep){
+        // Show the current step on the screen.
+        myScreen.showStep(step);
+        prevStep = step;
+    }
 
     delay(750); // Espera 0.75 segundos.
 }

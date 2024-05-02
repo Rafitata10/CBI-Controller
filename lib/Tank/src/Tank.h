@@ -32,6 +32,7 @@
 #define _STEP5 5 // Abrir la válvula de vaciado del tanque para procesar el resultado en una maquinaria que dividirá y empaquetará el jabón.
 #define _STEP6 6 // Finish. (Wait for a button push).
 #define _STEP7 7 // ERROR State.
+#define _RESETING 33 // Reseting.
 // Check steps:
 #define _CHECK_STEP0 8  // Check STEP0.
 #define _CHECK_STEP1 9  // Check STEP1.

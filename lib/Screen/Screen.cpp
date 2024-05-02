@@ -15,36 +15,43 @@ void Screen::initialize(){
     }
     display.display();
     display.clearDisplay();
-    display.setTextSize(3);
+    display.setTextSize(2);
     display.setTextColor(SSD1306_WHITE);
+    showStep(_STEP6);
 }
 
 // Show the current step on the screen.
 void Screen::showStep(unsigned int step){
     display.clearDisplay();
     display.setCursor(0, 0);
-    display.print("Step ");
-    display.println(step);
+    display.print(F("Step "));
+    if(step < 8){
+        display.println(step);
+    } else {
+        display.println(F("X"));
+    }
 
     display.setCursor(0, 32);
     switch(step){
         case _STEP0:
-        case _STEP2: display.println("Filling"); break;
-        case _STEP1: display.println("Heating"); break;
-        case _STEP3: display.println("Mixing");  break;
-        case _STEP4: display.println("Cooling"); break;
-        case _STEP5: display.println("Empty");   break;
-        case _STEP6: display.println("Idle");    break;
-        case _STEP7: display.println("ERROR!");  break;
+        case _STEP2: display.println(F("Filling"));    break;
+        case _STEP1: display.println(F("Heating"));    break;
+        case _STEP3: display.println(F("Mixing"));     break;
+        case _STEP4: display.println(F("Cooling"));    break;
+        case _STEP5: display.println(F("Emptying"));   break;
+        case _STEP6: display.println(F("Waiting...")); break;
+        case _STEP7: display.println(F("ERROR!"));     break;
 
         case _CHECK_STEP0:
         case _CHECK_STEP1:
         case _CHECK_STEP2:
         case _CHECK_STEP3:
         case _CHECK_STEP4:
-        case _CHECK_STEP5: display.println("Check!"); break;
+        case _CHECK_STEP5: display.println(F("Checking!")); break;
 
-        default: display.println("Unknown"); break;
+        case 33: display.println(F("Reseting")); break;
+
+        default: display.println(F("Unknown")); break;
     }
     display.display();
 }

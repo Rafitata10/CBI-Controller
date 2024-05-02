@@ -37,19 +37,19 @@ void Tank::unPackSRTankData(unsigned int popurri){
 
 // Screen print of the tank data.
 void Tank::imprimirSRTank(){
-    Serial.print("SRTank: ");
+    Serial.print(F("SRTank: "));
     Serial.print(tankData.highFloater);
-    Serial.print(", ");
+    Serial.print(F(", "));
     Serial.print(tankData.lowFloater);
-    Serial.print(", ");
+    Serial.print(F(", "));
     Serial.print(tankData.minTemperature);
-    Serial.print(", ");
+    Serial.print(F(", "));
     Serial.print(tankData.maxTemperature);
-    Serial.print(", ");
+    Serial.print(F(", "));
     Serial.print(tankData.revolutions);
-    Serial.print(", ");
+    Serial.print(F(", "));
     Serial.print(tankData2.volume);
-    Serial.print(", ");
+    Serial.print(F(", "));
     Serial.println(tankData2.temperature);
 }
 

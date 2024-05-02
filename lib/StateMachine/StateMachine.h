@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 #include <Tank.h>
+#include <Screen.h>
 
 // Define el pin para el botón de iniciar.
 #define PIN_START 6
@@ -35,7 +36,7 @@ class StateMachine {
 public:
     StateMachine();
     void handleState(unsigned int& step, unsigned char& comando, TankData& tankData, TankData2& tankData2, unsigned int& respuesta, unsigned int master);
-    void checkResponse(unsigned int& step, unsigned int& respuesta);
+    void checkResponse(unsigned int& step, unsigned int& respuesta, Screen& myScreen);
 
 public:
     // Variables to check the correctness of the tank operations.
