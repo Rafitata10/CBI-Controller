@@ -209,10 +209,11 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _STEP7: // ERROR - STATE.
-            if(counter == 1){
+            if(counter == 2){
                 Serial.println(F("Waiting for an operator to fix the error..."));
                 tank.resetTank();
                 respuesta = 100; // Para no mostrar el estado del tanque al inicializar.
+                counter = 0;
                 while(digitalRead(PIN_START) == HIGH); // Espera a que se pulse el botón que indica que se ha solucionado el problema.
                 step = _STEP0;
                 comando = _OPEN_INLET;                
@@ -261,7 +262,7 @@ unsigned int StateMachine::desconvertir(unsigned int& code){
         default:
             break;
     }
-    Serial.print(F("Desconvertir -> "));
+    Serial.print(F("Reset to STEP"));
     Serial.println(resp);
     return resp;
 }

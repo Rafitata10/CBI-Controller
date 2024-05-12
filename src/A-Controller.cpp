@@ -83,10 +83,7 @@ void loop(){
     syncController(); // Sincroniza los dos controladores.
     
     respuesta = transferir(comando); // Envía el comando.
-    if(respuesta > 0 && respuesta < 70){
-        Serial.print(F("Response: "));
-        Serial.println(respuesta);
-    } else {
+    if(respuesta <= 0 || respuesta >= 70){
         Serial.println(F("Connecting..."));
     }
 
