@@ -14,6 +14,8 @@
 
 #define SCREEN_WIDTH 128 // Ancho en píxeles.
 #define SCREEN_HEIGHT 64 // Altura en píxeles.
+// Define el pin de reset.
+#define RESET_LED 2
 
 class Screen {
 public:

@@ -21,6 +21,7 @@ void MasterSPI::initPins(){
     pinMode(PIN_SS, OUTPUT); // Configura el pin SS como salida.
     pinMode(PIN_START, INPUT); // Configura el pin START como entrada.
     pinMode(PIN_RESET, INPUT); // Configura el pin RESET como entrada.
+    pinMode(RESET_LED, OUTPUT); // Configura el pin RESET_LED como salida.
     pinMode(PIN_SYNC_3, OUTPUT); // Configura el pin 3 como salida.
     pinMode(PIN_SYNC_4, INPUT); // Configura el pin 4 como entrada.
 }

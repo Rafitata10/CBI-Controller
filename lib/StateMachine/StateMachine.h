@@ -29,14 +29,14 @@
 // Define los masters.
 #define MASTER_1 1 // Master 1.
 #define MASTER_2 2 // Master 2.
-// Define el pin de sincronización.
+// Define el pin de reset.
 #define PIN_RESET 11
 
 class StateMachine {
 public:
     StateMachine();
-    void handleState(unsigned int& step, unsigned char& comando, TankData& tankData, TankData2& tankData2, unsigned int& respuesta, unsigned int master);
-    void checkResponse(unsigned int& step, unsigned int& respuesta, Screen& myScreen);
+    void handleState(unsigned int& step, unsigned char& comando, TankData& tankData, TankData2& tankData2, unsigned int& respuesta, unsigned int master, unsigned int& numResets);
+    void checkResponse(unsigned int& step, unsigned int& respuesta, Screen& myScreen, unsigned int& numResets);
 
 public:
     // Variables to check the correctness of the tank operations.

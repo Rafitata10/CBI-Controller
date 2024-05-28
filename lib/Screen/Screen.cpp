@@ -49,7 +49,7 @@ void Screen::showStep(unsigned int step){
         case _CHECK_STEP4:
         case _CHECK_STEP5: display.println(F("Checking!")); break;
 
-        case 33: display.println(F("Reseting")); break;
+        case 33: display.println(F("Reseting")); digitalWrite(RESET_LED, HIGH); break;
 
         default: display.println(F("Unknown")); break;
     }

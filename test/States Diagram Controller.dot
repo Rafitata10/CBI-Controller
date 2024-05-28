@@ -1,61 +1,67 @@
-/*
-  * Rafael Ramírez Salas
-  * Ingeniería de Computadores, Universidad de Málaga
-  * Trabajo de Fin de Grado 2024: Fail Tolerant DualNano
-*/
-
 digraph finite_state_machine {
-	fontname = "Helvetica, Arial, sans-serif"
-	node [fontname = "Helvetica, Arial, sans-serif"]
-	edge [fontname = "Helvetica, Arial, sans-serif"]
-	rankdir = LR;
-	node [shape = doublecircle]; 0 12 13;
-	node [shape = circle];
+    fontname = "Helvetica, Arial, sans-serif"
+    node [fontname = "Helvetica, Arial, sans-serif"]
+    edge [fontname = "Helvetica, Arial, sans-serif"]
+    rankdir = TB;
+    node [shape = doublecircle]; 12 13;
+    node [shape = circle];
 
-	0  [label = "1-Fill"]
-	1  [label = "1-Filled?"]
-	2  [label = "2-Heat"]
-	3  [label = "2-Heated?"]
-	4  [label = "3-Fill"]
-	5  [label = "3-Filled?"]
-	6  [label = "4-Stir"]
-	7  [label = "4-Stirred?"]
-	8  [label = "5-Cool"]
-	9  [label = "5-Cooled?"]
-	10 [label = "6-Empty"]
-	11 [label = "6-Emptied?"]
-	12 [label = "7-Wait"]
-	13 [label = "Alarm"]
+    {
+        rank=same; 0 1 2
+    }
+    {
+        rank=same; 3 4 5
+    }
+    {
+        rank=same; 6 7 8
+    }
+    {
+        rank=same; 9 10 11
+    }
 
-	0 -> 0   [label = "Volume < 1500l"];
-	0 -> 1   [label = "Volume = 1500l"];
-	1 -> 2   [label = "Correct"];
-	2 -> 2   [label = "Temperature < 35ºC"];
-	2 -> 3   [label = "Temperature = 35ºC"];
-	3 -> 4   [label = "Correct"];
-	4 -> 4   [label = "Volume < 3000l"];
-	4 -> 5   [label = "Volume = 3000l"];
-	5 -> 6   [label = "Correct"];
-	6 -> 6   [label = "!Stirred"];
-	6 -> 7   [label = "Stirred"];
-	7 -> 8   [label = "Correct"];
-	8 -> 8   [label = "Temperature > 35ºC"];
-	8 -> 9   [label = "Temperature = 35ºC"];
-	9 -> 10  [label = "Correct"];
-	10 -> 10 [label = "Volume > 0l"];
-	10 -> 11 [label = "Volume = 0l"];
-	11 -> 12 [label = "Correct"];
-	12 -> 12 [label = "!Button Pushed"];
-	12 -> 0  [label = "Button Pushed"];
+    0  [label = "0-Fill"]
+    1  [label = "0-Filled?"]
+    2  [label = "1-Heat"]
+    3  [label = "1-Heated?"]
+    4  [label = "2-Fill"]
+    5  [label = "2-Filled?"]
+    6  [label = "3-Stir"]
+    7  [label = "3-Stirred?"]
+    8  [label = "4-Cool"]
+    9  [label = "4-Cooled?"]
+    10 [label = "5-Empty"]
+    11 [label = "5-Emptied?"]
+    12 [label = "6-Wait"]
+    13 [label = "Alarm"]
 
-	13 -> 13 [label = "!Fixed"];
-	13 -> 0  [label = "Fixed"];
+    0 -> 0   [label = "Volume < 1500l"];
+    0 -> 1   [label = "Volume = 1500l", color = blue,  fontcolor = blue];
+    1 -> 2   [label = "Correct", color = green, fontcolor = green];
+    2 -> 2   [label = "Temperature < 35ºC"];
+    2 -> 3   [label = "Temperature = 35ºC", color = blue,  fontcolor = blue];
+    3 -> 4   [label = "Correct", color = green, fontcolor = green];
+    4 -> 4   [label = "Volume < 3000l"];
+    4 -> 5   [label = "Volume = 3000l", color = blue,  fontcolor = blue];
+    5 -> 6   [label = "Correct", color = green, fontcolor = green];
+    6 -> 6   [label = "!Stirred"];
+    6 -> 7   [label = "Stirred", color = blue,  fontcolor = blue];
+    7 -> 8   [label = "Correct", color = green, fontcolor = green];
+    8 -> 8   [label = "Temperature > 25ºC"];
+    8 -> 9   [label = "Temperature = 25ºC", color = blue,  fontcolor = blue];
+    9 -> 10  [label = "Correct", color = green, fontcolor = green];
+    10 -> 10 [label = "Volume > 0l"];
+    10 -> 11 [label = "Volume = 0l", color = blue,  fontcolor = blue];
+    11 -> 12 [label = "Correct", color = green, fontcolor = green];
+    12 -> 12 [label = "!Button Pushed"];
+    12 -> 0  [label = "Button Pushed", color = blue,  fontcolor = blue];
 
-	1 -> 13  [label = "Error"];
-	3 -> 13  [label = "Error"];
-	5 -> 13  [label = "Error"];
-	7 -> 13  [label = "Error"];
-	9 -> 13  [label = "Error"];
-	11 -> 13 [label = "Error"];
-	
+    13 -> 13 [label = "!Fixed"];
+    13 -> 0  [label = "Fixed", color = green, fontcolor = green];
+
+    1 -> 13  [label = "Error", color = red, fontcolor = red];
+    3 -> 13  [label = "Error", color = red, fontcolor = red];
+    5 -> 13  [label = "Error", color = red, fontcolor = red];
+    7 -> 13  [label = "Error", color = red, fontcolor = red];
+    9 -> 13  [label = "Error", color = red, fontcolor = red];
+    11 -> 13 [label = "Error", color = red, fontcolor = red];
 }

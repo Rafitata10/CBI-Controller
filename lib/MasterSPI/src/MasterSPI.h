@@ -19,8 +19,9 @@
 #define PIN_SYNC_4 4
 // Define el pin para el botón de iniciar.
 #define PIN_START 6
-//Define el pin de sincronización.
+//Define el pin de reset.
 #define PIN_RESET 11
+#define RESET_LED 2
 // Define los posibles divisores de reloj.
 #define MASTERSPI_CLOCK_DIV4 0x00
 #define MASTERSPI_CLOCK_DIV16 0x01

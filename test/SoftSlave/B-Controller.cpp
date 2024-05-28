@@ -30,6 +30,8 @@ unsigned char comando = _OPEN_INLET;
 // Variables para el estado del tanque.
 unsigned int step = _STEP6;
 unsigned int prevStep = _STEP6;
+// Variable para el número de resets.
+unsigned int numResets = 0;
 
 // Configuración inicial.
 void setup(){
@@ -89,10 +91,10 @@ void loop(){
         Serial.println(F("Connecting..."));
     }
 
-    myStateMachine.checkResponse(step, respuesta, myScreen);
+    myStateMachine.checkResponse(step, respuesta, myScreen, numResets);
 
     // Selección del siguiente comando.
-    myStateMachine.handleState(step, comando, tankData, tankData2, respuesta, MASTER_2);
+    myStateMachine.handleState(step, comando, tankData, tankData2, respuesta, MASTER_2, numResets);
 
     // Muestro el estado del tanque.
     if(actualizado && respuesta < 70){
@@ -104,6 +106,8 @@ void loop(){
 
     if(digitalRead(PIN_RESET) == HIGH){
         step = _RESETING;
+    } else {
+        digitalWrite(RESET_LED, LOW);
     }
     
     if(step != prevStep){
