@@ -197,6 +197,7 @@ void StateMachine::handleState(unsigned int& step, unsigned char& comando, TankD
             }
             break;
         case _STEP6: // Finish.
+            delay(10);
             if(digitalRead(PIN_RESET) == LOW){
                 if(tankData2.volume > 1000){
                     Serial.println(F("\nERROR!"));
